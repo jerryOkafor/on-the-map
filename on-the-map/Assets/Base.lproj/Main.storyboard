@@ -117,6 +117,13 @@
                                     <outletCollection property="gestureRecognizers" destination="w3g-Kz-GBU" appends="YES" id="rC2-sw-XWW"/>
                                 </connections>
                             </view>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="3Wv-7F-PFn">
+                                <rect key="frame" x="197" y="504" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="yIR-iB-51S"/>
+                                    <constraint firstAttribute="width" constant="20" id="zOq-ZI-17G"/>
+                                </constraints>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -125,7 +132,9 @@
                             <constraint firstItem="134-Vn-fbs" firstAttribute="leading" secondItem="i0a-NG-OGf" secondAttribute="leading" constant="40" id="4Oc-FV-Iar"/>
                             <constraint firstItem="134-Vn-fbs" firstAttribute="top" secondItem="z76-Go-gyZ" secondAttribute="bottom" constant="40" id="9Mx-ye-sjo"/>
                             <constraint firstItem="liX-Lu-pdg" firstAttribute="top" secondItem="134-Vn-fbs" secondAttribute="bottom" constant="20" id="C8j-Pi-pCn"/>
+                            <constraint firstItem="3Wv-7F-PFn" firstAttribute="centerX" secondItem="i0a-NG-OGf" secondAttribute="centerX" id="DJX-Ld-fNG"/>
                             <constraint firstItem="i0a-NG-OGf" firstAttribute="trailing" secondItem="UXK-mk-e9F" secondAttribute="trailing" constant="40" id="Ifo-ij-rx0"/>
+                            <constraint firstItem="3Wv-7F-PFn" firstAttribute="top" secondItem="ovr-x8-tiV" secondAttribute="bottom" constant="40" id="Jd0-vb-wMH"/>
                             <constraint firstItem="z76-Go-gyZ" firstAttribute="top" secondItem="i0a-NG-OGf" secondAttribute="top" constant="60" id="KFx-bH-G0s"/>
                             <constraint firstItem="i0a-NG-OGf" firstAttribute="trailing" secondItem="ovr-x8-tiV" secondAttribute="trailing" constant="40" id="Rr2-7m-Z5Z"/>
                             <constraint firstItem="UXK-mk-e9F" firstAttribute="leading" secondItem="i0a-NG-OGf" secondAttribute="leading" constant="40" id="UlL-bK-y9d"/>
@@ -138,8 +147,10 @@
                         <viewLayoutGuide key="safeArea" id="i0a-NG-OGf"/>
                     </view>
                     <connections>
+                        <outlet property="createAccountBtn" destination="ovr-x8-tiV" id="wa8-UD-Qf3"/>
                         <outlet property="emailTextField" destination="134-Vn-fbs" id="5jQ-zs-N6T"/>
                         <outlet property="loginBtn" destination="UXK-mk-e9F" id="jyI-tx-lIl"/>
+                        <outlet property="networkIndicator" destination="3Wv-7F-PFn" id="l0R-w8-Gwp"/>
                         <outlet property="passwordTextField" destination="liX-Lu-pdg" id="cF5-F5-gys"/>
                     </connections>
                 </viewController>
