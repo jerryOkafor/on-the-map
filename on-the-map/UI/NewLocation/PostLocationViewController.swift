@@ -24,20 +24,22 @@ class PostLocationViewController: UIViewController {
         self.addressTextField.delegate = self
         self.linkTextField.delegate = self
         
+        self.linkTextField.keyboardType = .URL
+        
         let cancelBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelAddLocation(_:)))
         self.navigationItem.leftBarButtonItems = [cancelBtn]
-        
     }
     
     
     @objc
     private func cancelAddLocation(_ sender:AnyObject){
         self.dismiss(animated: true, completion: nil)
-        
     }
     
     
     @IBAction func onTapFindLocationBtn(_ sender: Any) {
+        self.view.endEditing(true)
+        
         do{
             guard  let address = addressTextField.text, !address.isEmpty else {throw ValidationError(message: "Address is required")}
             guard let link = linkTextField.text, !link.isEmpty else {throw ValidationError(message: "Link is required")}
