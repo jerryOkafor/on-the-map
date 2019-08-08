@@ -20,6 +20,8 @@ class MapViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         
+        self.mapView.delegate = self
+        
         // 1
         let location = CLLocationCoordinate2D(latitude: 51.50007773,
                                               longitude: -0.1246402)
@@ -45,9 +47,6 @@ class MapViewController: UIViewController {
         self.navigationItem.rightBarButtonItems  = [addBtnItem,refreshBtnItem]
         
         //load map locations here and drop pins
-        
-    
-    
     }
     
 
@@ -76,4 +75,15 @@ class MapViewController: UIViewController {
     }
 
 
+}
+
+extension MapViewController : MKMapViewDelegate{
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if control == view.rightCalloutAccessoryView{
+            if let url = view.annotation?.subtitle{
+                UIApplication.shared.openURL(URL(string: url!)!)
+            }
+            
+        }
+    }
 }

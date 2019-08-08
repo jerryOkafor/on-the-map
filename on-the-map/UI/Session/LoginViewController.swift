@@ -22,6 +22,10 @@ class LoginViewController: UIViewController {
         // Do any additional setup after loading the view.
         self.emailTextField.text = "jerry.okafor.171858@unn.edu.ng"
         self.passwordTextField.text = "don13@udacity"
+        
+        //set delegates
+        self.emailTextField.delegate = self
+        self.passwordTextField.delegate  = self
     }
 
     @IBAction func onLoginBtn(_ sender: Any) {
@@ -84,3 +88,11 @@ class LoginViewController: UIViewController {
     }
 }
  
+
+
+extension LoginViewController: UITextFieldDelegate{
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}

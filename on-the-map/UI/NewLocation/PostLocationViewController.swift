@@ -11,6 +11,7 @@ import UIKit
 class PostLocationViewController: UIViewController {
     @IBOutlet weak var addressTextField: UITextField!
     @IBOutlet weak var linkTextField: UITextField!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,10 +19,53 @@ class PostLocationViewController: UIViewController {
         // Do any additional setup after loading the view.
         self.hidesBottomBarWhenPushed = true
         self.navigationItem.title = "Add Location"
+        
+        
+        self.addressTextField.delegate = self
+        self.linkTextField.delegate = self
+        
+        let cancelBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelAddLocation(_:)))
+        self.navigationItem.leftBarButtonItems = [cancelBtn]
+        
     }
     
+    
+    @objc
+    private func cancelAddLocation(_ sender:AnyObject){
+        self.dismiss(animated: true, completion: nil)
+        
+    }
+    
+    
     @IBAction func onTapFindLocationBtn(_ sender: Any) {
-        FindLocationViewController.launch(self)
+        do{
+            guard  let address = addressTextField.text, !address.isEmpty else {throw ValidationError(message: "Address is required")}
+            guard let link = linkTextField.text, !link.isEmpty else {throw ValidationError(message: "Link is required")}
+            
+            self.activityIndicator.startAnimating()
+            //carry out reverse geocoding
+            LocationManager.sharedInstance.getReverseGeoCodedLocation(address: address) {[unowned self] (location, placeMark, error) in
+                self.activityIndicator.stopAnimating()
+                
+                if let error = error{
+                    print(error)
+                    self.showError(error.localizedDescription)
+                    return
+                }
+                
+                print(location)
+                print(placeMark)
+                
+                if let location = location, let placeMark = placeMark{
+                    FindLocationViewController.launch(self, location: location, placeMark: placeMark)
+                }
+                
+            }
+            
+        }catch{
+            let errorMsg = (error as! ValidationError).message!
+            self.showError(errorMsg)
+        }
     }
     
     class func launch(_ caller:UIViewController){
@@ -30,7 +74,15 @@ class PostLocationViewController: UIViewController {
         let vc = storyboard.instantiateViewController(withIdentifier: String(describing: PostLocationViewController.self))
         vc.hidesBottomBarWhenPushed = true
         
-        caller.navigationController?.pushViewController(vc, animated: true)
+        caller.present(vc, animated: true)
     }
 
 }
+
+extension PostLocationViewController : UITextFieldDelegate{
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
+
