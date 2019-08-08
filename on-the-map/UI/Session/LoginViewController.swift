@@ -33,7 +33,7 @@ class LoginViewController: UIViewController {
             let requestData = CreatSession(udacity: Credential(userName: email, password: password))
             
             self.toggleNetworkIndicator(true)
-            ApiClient.request(request: ApiRouter.createSession.toUrlRequest(), requestType: CreatSession.self,responseType: CreatSessionResponse.self, body: requestData) { (response, error) in
+            ApiClient.doRequestWithData(request: ApiRouter.createSession.toUrlRequest(), requestType: CreatSession.self,responseType: CreatSessionResponse.self, body: requestData) { (response, error) in
                 self.toggleNetworkIndicator(false)
                 
                 if let error  = error{
@@ -62,16 +62,8 @@ class LoginViewController: UIViewController {
         self.present(vc!, animated: true, completion: nil)
 
     }
-    private func showError(_ message:String){
-        let alert =  UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ok", style: .default) { action in
-            
-        }
-        
-        alert.addAction(okAction)
-        
-        self.present(alert, animated: true, completion: nil)
-    }
+
+    
     private func toggleNetworkIndicator(_ show:Bool){
         if show{
             self.networkIndicator.startAnimating()

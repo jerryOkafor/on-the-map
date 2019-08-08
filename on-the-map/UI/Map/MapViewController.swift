@@ -1,5 +1,5 @@
 //
-//  ListViewController.swift
+//  MapViewController.swift
 //  on-the-map
 //
 //  Created by Jerry Hanks on 03/08/2019.
@@ -7,18 +7,34 @@
 //
 
 import UIKit
+import MapKit
 
-class ListViewController: UIViewController {
 
-    @IBOutlet weak var tableView: UITableView!
-    
-    private let links = [String]()
+class MapViewController: UIViewController {
+
+    @IBOutlet weak var mapView: MKMapView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        self.title = "On The Map"
-
+//        self.title = ""
         // Do any additional setup after loading the view.
+        
+        
+        // 1
+        let location = CLLocationCoordinate2D(latitude: 51.50007773,
+                                              longitude: -0.1246402)
+        
+        // 2
+        let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        let region = MKCoordinateRegion(center: location, span: span)
+        mapView.setRegion(region, animated: true)
+        
+        //3
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = location
+        annotation.title = "Big Ben"
+        annotation.subtitle = "London"
+        mapView.addAnnotation(annotation)
         
         let logoutBtnItem = UIBarButtonItem(title: "LOGOUT", style: .done, target: self, action: #selector(logout(_:)))
         self.navigationItem.leftBarButtonItems = [logoutBtnItem]
@@ -27,10 +43,17 @@ class ListViewController: UIViewController {
         let addBtnItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem(_:)))
         
         self.navigationItem.rightBarButtonItems  = [addBtnItem,refreshBtnItem]
+        
+        //load map locations here and drop pins
+        
+    
+    
     }
     
-    @objc
-    private func logout(_ sender:UIBarButtonItem){
+
+    
+    @IBAction
+    private func logout(_ sender:AnyObject){
         print("Logout Btn clicked!")
         
     }
@@ -43,42 +66,14 @@ class ListViewController: UIViewController {
     
     @objc
     private func addItem(_ sender:UIBarButtonItem){
-         PostLocationViewController.launch(self)
+        PostLocationViewController.launch(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         self.tabBarController?.title = ""
-        
-        self.tableView.dataSource = self
-        self.tableView.delegate = self
     }
-}
 
-//List TableViewdatasource
-extension ListViewController : UITableViewDataSource{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell   = tableView.dequeueReusableCell(withIdentifier: String(describing: MapLink.self), for: indexPath) as! MapLink
-        
-        return cell
-    }
-    
-    
-}
-
-//List TableView Delegate
-extension ListViewController  : UITableViewDelegate{
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Item selected at : \(indexPath.row)")
-    }
-}
-
-
-class MapLink: UITableViewCell {
 
 }

@@ -18,11 +18,14 @@ enum HTTPMethod : String{
 enum ApiRouter{
     
     case createSession
+    case deleteSession
+    case locations
     
     private var method : HTTPMethod{
         switch self {
         case .createSession:
             return .post
+        case .deleteSession: return .delete
         default:
             return .get
         }
@@ -41,26 +44,39 @@ enum ApiRouter{
     private var path : String{
         switch self {
         case .createSession: return "session"
+        case .deleteSession: return "session"
+        case .locations:return "StudentLocation?order=-updatedAt&limit=80"
         }
     }
     
     func toUrlRequest() -> URLRequest{
         //convert the base URL
-        let url = URL(string: ApiClient.baseUrl)!
+        let url = URL(string: "\(ApiClient.baseUrl)\(path)")!
+        
+        //append the path
+        let urlwithPath = URL(string: url.absoluteString.removingPercentEncoding!)!
+        
+        print(urlwithPath)
         
         //creat a url reauest and append the path
-        var urlRequest = URLRequest(url: url.appendingPathComponent(path))
+        var urlRequest = URLRequest(url: urlwithPath)
         
         //set the method for request
         urlRequest.httpMethod = method.rawValue
+
+        var xsrfCookie: HTTPCookie? = nil
+        let sharedCookieStorage = HTTPCookieStorage.shared
+        for cookie in sharedCookieStorage.cookies! {
+            if cookie.name == "XSRF-TOKEN" { xsrfCookie = cookie }
+        }
+        if let xsrfCookie = xsrfCookie {
+            urlRequest.setValue(xsrfCookie.value, forHTTPHeaderField: "X-XSRF-TOKEN")
+        }
+
         
         urlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
         urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        // encoding a JSON body from a string, can also use a Codable struct
-//        urlRequest.httpBody = try JSONEncoder().encode(paramters)
 
-        
         return urlRequest
     }
     

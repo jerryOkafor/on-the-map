@@ -13,7 +13,7 @@
         <!--Main View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="on_the_map" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MainViewController" id="BYZ-38-t0r" customClass="MainViewController" customModule="on_the_map" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -205,18 +205,28 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Dwl-SZ-gkd">
+                                <rect key="frame" x="197" y="440.5" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="26Z-tH-k3s"/>
+                                    <constraint firstAttribute="height" constant="20" id="tr6-Ea-4Ed"/>
+                                </constraints>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="Dwl-SZ-gkd" firstAttribute="centerY" secondItem="BT0-kl-sxE" secondAttribute="centerY" id="1RM-jB-DCG"/>
                             <constraint firstItem="bWp-oo-Emn" firstAttribute="top" secondItem="BT0-kl-sxE" secondAttribute="top" id="VmF-a4-17F"/>
                             <constraint firstItem="BT0-kl-sxE" firstAttribute="trailing" secondItem="bWp-oo-Emn" secondAttribute="trailing" id="WuO-jb-Chf"/>
                             <constraint firstItem="bWp-oo-Emn" firstAttribute="leading" secondItem="BT0-kl-sxE" secondAttribute="leading" id="ckb-oz-gyW"/>
                             <constraint firstItem="BT0-kl-sxE" firstAttribute="bottom" secondItem="bWp-oo-Emn" secondAttribute="bottom" id="gQB-8C-C1L"/>
+                            <constraint firstItem="Dwl-SZ-gkd" firstAttribute="centerX" secondItem="BT0-kl-sxE" secondAttribute="centerX" id="ul4-XU-k1B"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="BT0-kl-sxE"/>
                     </view>
                     <navigationItem key="navigationItem" title="On The Map" id="QW0-vD-oLf"/>
                     <connections>
+                        <outlet property="networkIndicator" destination="Dwl-SZ-gkd" id="Zpd-FH-6s3"/>
                         <outlet property="tableView" destination="bWp-oo-Emn" id="LFI-0m-ZOR"/>
                     </connections>
                 </viewController>
