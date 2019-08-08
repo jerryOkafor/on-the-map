@@ -11,7 +11,6 @@ import MapKit
 
 class FindLocationViewController: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
-    var location:CLLocation!
     var placeMark:CLPlacemark!
     var mediaUrl:String!
     
@@ -31,7 +30,7 @@ class FindLocationViewController: UIViewController {
         }
         
         let annotation = MKPointAnnotation()
-        annotation.coordinate = location.coordinate
+        annotation.coordinate = placeMark.location!.coordinate
         annotation.title  = placeMark.name
         
         self.mapView.addAnnotations([annotation])
@@ -45,7 +44,7 @@ class FindLocationViewController: UIViewController {
     
 
     @IBAction func onTapFinishBtn(_ sender: Any) {
-        let body  = CreateLocationRequest(firstName: "John", lastName: "Doe", longitude: location.coordinate.longitude, latitude: location.coordinate.latitude, mapString: placeMark.name, mediaURL: mediaUrl, uniqueKey: UUID().uuidString)
+        let body  = CreateLocationRequest(firstName: "John", lastName: "Doe", longitude: placeMark.location!.coordinate.longitude, latitude: placeMark.location!.coordinate.latitude, mapString: placeMark.name, mediaURL: mediaUrl, uniqueKey: UUID().uuidString)
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         self.addLocationTask = ApiClient.doRequestWithData(request: ApiRouter.createLocation.toUrlRequest(), requestType: CreateLocationRequest.self, responseType: CreateLocationResponse.self, body: body,secureResponse: false) { (response, error) in
@@ -57,7 +56,7 @@ class FindLocationViewController: UIViewController {
             }
             
             if let response = response{
-                let location = Location(firstName: body.firstName, lastName: body.lastName, longitude: body.latitude, latitude: body.longitude, mapString: body.mapString, mediaURL: body.mapString, uniqueKey: body.uniqueKey, objectId: response.objectId, createdAt: response.createdAt, updatedAt: response.createdAt)
+                let location = Location(firstName: body.firstName, lastName: body.lastName, longitude: body.latitude, latitude: body.longitude, mapString: body.mapString, mediaURL: body.mediaURL, uniqueKey: body.uniqueKey, objectId: response.objectId, createdAt: response.createdAt, updatedAt: response.createdAt)
                 
                 (UIApplication.shared.delegate as? AppDelegate)?.locations.append(location)
                 
@@ -74,11 +73,10 @@ class FindLocationViewController: UIViewController {
          self.addLocationTask?.cancel()
     }
     
-    class func launch(_ caller:UIViewController,location:CLLocation,placeMark:CLPlacemark){
+    class func launch(_ caller:UIViewController,placeMark:CLPlacemark){
         let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
         
         let vc = storyboard.instantiateViewController(withIdentifier: String(describing: FindLocationViewController.self)) as! FindLocationViewController
-        vc.location = location
         vc.placeMark = placeMark
         
         vc.hidesBottomBarWhenPushed = true

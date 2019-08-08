@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 class PostLocationViewController: UIViewController {
     @IBOutlet weak var addressTextField: UITextField!
@@ -46,7 +47,8 @@ class PostLocationViewController: UIViewController {
             
             self.activityIndicator.startAnimating()
             //carry out reverse geocoding
-            LocationManager.sharedInstance.getReverseGeoCodedLocation(address: address) {[unowned self] (location, placeMark, error) in
+            
+            CLGeocoder().geocodeAddressString(address) { (placemarkes, error) in
                 self.activityIndicator.stopAnimating()
                 
                 if let error = error{
@@ -56,11 +58,11 @@ class PostLocationViewController: UIViewController {
                 }
                 
                 
-                if let location = location, let placeMark = placeMark{
-                    FindLocationViewController.launch(self, location: location, placeMark: placeMark)
+                if let placemark = placemarkes?[0]{
+                    FindLocationViewController.launch(self, placeMark: placemark)
                 }
-                
             }
+            
             
         }catch{
             let errorMsg = (error as! ValidationError).message!
