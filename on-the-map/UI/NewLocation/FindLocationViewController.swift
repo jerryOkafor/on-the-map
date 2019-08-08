@@ -13,6 +13,9 @@ class FindLocationViewController: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
     var location:CLLocation!
     var placeMark:CLPlacemark!
+    var mediaUrl:String!
+    
+    private var addLocationTask:URLSessionDataTask? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,7 +45,33 @@ class FindLocationViewController: UIViewController {
     
 
     @IBAction func onTapFinishBtn(_ sender: Any) {
+        let body  = CreateLocationRequest(firstName: "John", lastName: "Doe", longitude: location.coordinate.longitude, latitude: location.coordinate.latitude, mapString: placeMark.name, mediaURL: mediaUrl, uniqueKey: UUID().uuidString)
         
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        self.addLocationTask = ApiClient.doRequestWithData(request: ApiRouter.createLocation.toUrlRequest(), requestType: CreateLocationRequest.self, responseType: CreateLocationResponse.self, body: body,secureResponse: false) { (response, error) in
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            
+            if let error  = error{
+                self.showError(error.localizedDescription)
+                return
+            }
+            
+            if let response = response{
+                let location = Location(firstName: body.firstName, lastName: body.lastName, longitude: body.latitude, latitude: body.longitude, mapString: body.mapString, mediaURL: body.mapString, uniqueKey: body.uniqueKey, objectId: response.objectId, createdAt: response.createdAt, updatedAt: response.createdAt)
+                
+                (UIApplication.shared.delegate as? AppDelegate)?.locations.append(location)
+                
+                self.navigationController?.dismiss(animated: true, completion: nil)
+            }
+            
+        }
+        
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+         self.addLocationTask?.cancel()
     }
     
     class func launch(_ caller:UIViewController,location:CLLocation,placeMark:CLPlacemark){

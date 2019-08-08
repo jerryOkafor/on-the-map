@@ -20,11 +20,13 @@ enum ApiRouter{
     case createSession
     case deleteSession
     case locations
+    case createLocation
     
     private var method : HTTPMethod{
         switch self {
         case .createSession:
             return .post
+        case .createLocation: return .post
         case .deleteSession: return .delete
         default:
             return .get
@@ -46,6 +48,7 @@ enum ApiRouter{
         case .createSession: return "session"
         case .deleteSession: return "session"
         case .locations:return "StudentLocation?order=-updatedAt&limit=80"
+        case .createLocation:return "StudentLocation"
         }
     }
     

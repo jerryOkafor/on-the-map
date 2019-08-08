@@ -154,4 +154,7 @@ extension ListViewController  : UITableViewDelegate{
 
 class MapLink: UITableViewCell {
 
+    override func layoutSubviews() {
+        self.selectionStyle = .none
+    }
 }

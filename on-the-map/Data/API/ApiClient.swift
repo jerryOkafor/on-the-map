@@ -81,12 +81,13 @@ class ApiClient {
     }
     
     
-    class func doRequestWithData<RequestType: Encodable,ResponseType: Decodable>(request: URLRequest,requestType:RequestType.Type,responseType:ResponseType.Type,body: RequestType, completion: @escaping (ResponseType?, Error?) -> Void) -> URLSessionDataTask {
-        
+    class func doRequestWithData<RequestType: Encodable,ResponseType: Decodable>(request: URLRequest,requestType:RequestType.Type,responseType:ResponseType.Type,body: RequestType,secureResponse:Bool = true, completion: @escaping (ResponseType?, Error?) -> Void) -> URLSessionDataTask {
         var urlRequest =  request
         urlRequest.httpBody = try! JSONEncoder().encode(body)
     
         let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            
+             print(response)
             
             //check error for early exit, non http error
             guard error  == nil else{
@@ -128,7 +129,14 @@ class ApiClient {
             //try to decode the response
             let decoder = JSONDecoder()
             do {
-                let newData = data.subdata(in: 5..<data.count)
+                
+                let newData:Data!
+                
+                if secureResponse{
+                    newData = data.subdata(in: 5..<data.count)
+                }else{
+                    newData = data
+                }
                 
                 let responseObject = try decoder.decode(ResponseType.self, from: newData)
                 DispatchQueue.main.async {

@@ -16,6 +16,8 @@ class LoginViewController: UIViewController {
     @IBOutlet var networkIndicator: UIActivityIndicatorView!
     @IBOutlet weak var createAccountBtn: UIView!
     
+    private var loginTask:URLSessionDataTask? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -37,7 +39,7 @@ class LoginViewController: UIViewController {
             let requestData = CreatSession(udacity: Credential(userName: email, password: password))
             
             self.toggleNetworkIndicator(true)
-            ApiClient.doRequestWithData(request: ApiRouter.createSession.toUrlRequest(), requestType: CreatSession.self,responseType: CreatSessionResponse.self, body: requestData) { (response, error) in
+            self.loginTask = ApiClient.doRequestWithData(request: ApiRouter.createSession.toUrlRequest(), requestType: CreatSession.self,responseType: CreatSessionResponse.self, body: requestData) { (response, error) in
                 self.toggleNetworkIndicator(false)
                 
                 if let error  = error{
@@ -86,8 +88,14 @@ class LoginViewController: UIViewController {
         let url = URL(string: "https://www.udacity.com/")!
         UIApplication.shared.open(url)
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        self.loginTask?.cancel()
+    }
 }
- 
+
 
 
 extension LoginViewController: UITextFieldDelegate{
