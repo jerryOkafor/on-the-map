@@ -13,15 +13,16 @@ class ListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var networkIndicator: UIActivityIndicatorView!
     
-    private var locations = [Location]()
+    private var locations:[Location]{
+        get{return (UIApplication.shared.delegate as! AppDelegate).locations}
+    }
     
     private let links = [String]()
-    private var networkTask:URLSessionDataTask? = nil
-    private var deletSessoinTask:URLSessionDataTask? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        self.title = "On The Map"
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
 
         // Do any additional setup after loading the view.
         
@@ -33,31 +34,35 @@ class ListViewController: UIViewController {
         
         self.navigationItem.rightBarButtonItems  = [addBtnItem,refreshBtnItem]
         
-        //load locations
-        self.loadLocations()
+        
+        //add observers
+        NotificationCenter.default.addObserver(self, selector: #selector(doneLoadingData(_:)), name: .doneLoading, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(networkActivityStarted), name: .networkActivityStarted, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(networkActivityDone), name: .networkActivityStoped, object: nil)
     }
     
-    
-    private func loadLocations(){
+    @objc
+    private func networkActivityStarted(){
         self.toggleProgress(true)
-        self.networkTask =  ApiClient.doRequest(request: ApiRouter.locations.toUrlRequest(),responseType: LocationResponse.self,secureResponse: false) { (response, error) in
-            
-            self.toggleProgress(false)
-            if let error = error{
-                print("Error: \(error)")
-                
-                self.showError(error.localizedDescription)
-                return
-            }
-            
-            if let locations = response?.results{
-                self.locations = locations
-                
-                self.tableView.reloadData()
-            }
-            
-            
-        }
+    }
+    
+    @objc
+    private func networkActivityDone(){
+        self.toggleProgress(false)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        //refres maps pins
+        self.tableView.reloadData()
+    }
+
+    
+    @objc
+    private func doneLoadingData(_ notification:Notification){
+        //refres maps pins
+        self.tableView.reloadData()
     }
     
     private func toggleProgress(_ show:Bool){
@@ -72,36 +77,13 @@ class ListViewController: UIViewController {
     
     @objc
     private func logout(_ sender:UIBarButtonItem){
-        
-        UIApplication.shared.isNetworkActivityIndicatorVisible   = true
-        ApiClient.doRequest(request: ApiRouter.deleteSession.toUrlRequest(), responseType: Session.self) { (response, error) in
-            UIApplication.shared.isNetworkActivityIndicatorVisible = false
-            
-            if let error = error{
-                print("Error: \(error)")
-                
-                self.showError(error.localizedDescription)
-                return
-            }
-            
-            self.completeLogout()
-        }
-    }
-    
-    private func completeLogout(){
-        //start from the beginning
-        
-        if let window = (UIApplication.shared.delegate as? AppDelegate)?.window{
-            let rootNavControler = storyboard?.instantiateViewController(withIdentifier: String(describing: MainViewController.self))
-            window.rootViewController = rootNavControler
-        }
-        
+        NotificationCenter.default.post(name: .logout, object: nil)
     }
     
     
     @objc
     private func refresh(_ sender:UIBarButtonItem){
-        print("Refresh Btn clicked!")
+       NotificationCenter.default.post(name: .refresh, object: nil)
         
     }
     
@@ -109,21 +91,7 @@ class ListViewController: UIViewController {
     private func addItem(_ sender:UIBarButtonItem){
          PostLocationViewController.launch(self)
     }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        self.tabBarController?.title = ""
-        
-        self.tableView.dataSource = self
-        self.tableView.delegate = self
-    }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        self.networkTask?.cancel()
-    }
 }
 
 //List TableViewdatasource
@@ -135,7 +103,7 @@ extension ListViewController : UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell   = tableView.dequeueReusableCell(withIdentifier: String(describing: MapLink.self), for: indexPath) as! MapLink
         let item = self.locations[indexPath.row]
-        cell.textLabel?.text  = item.firstName
+        cell.textLabel?.text  = "\(String(describing: item.firstName!)) \(String(describing: item.lastName!))"
         cell.detailTextLabel?.text = item.mediaURL
         
         return cell
@@ -147,7 +115,12 @@ extension ListViewController : UITableViewDataSource{
 //List TableView Delegate
 extension ListViewController  : UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Item selected at : \(indexPath.row)")
+        let location = locations[indexPath.row]
+        if let url = URL(string: location.mediaURL){
+            UIApplication.shared.open(url)
+        }else{
+            self.showError("Invalid media link")
+        }
     }
 }
 
@@ -155,6 +128,8 @@ extension ListViewController  : UITableViewDelegate{
 class MapLink: UITableViewCell {
 
     override func layoutSubviews() {
+        super.layoutSubviews()
         self.selectionStyle = .none
+        
     }
 }

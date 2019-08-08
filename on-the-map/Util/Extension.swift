@@ -20,3 +20,14 @@ extension UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
 }
+
+
+extension Notification.Name{
+    static let doneLoading = Notification.Name("doneLoading")
+    static let refresh = Notification.Name("refrsh_data")
+    static let logout = Notification.Name("logout")
+    
+    //network activity
+    static let networkActivityStarted = Notification.Name("network_activity_staretd")
+    static let networkActivityStoped = Notification.Name("network_activity_stoped")
+}

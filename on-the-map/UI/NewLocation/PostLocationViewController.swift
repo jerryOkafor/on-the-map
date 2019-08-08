@@ -53,8 +53,6 @@ class PostLocationViewController: UIViewController {
                     return
                 }
                 
-                print(location)
-                print(placeMark)
                 
                 if let location = location, let placeMark = placeMark{
                     FindLocationViewController.launch(self, location: location, placeMark: placeMark)
