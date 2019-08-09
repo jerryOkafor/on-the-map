@@ -59,7 +59,7 @@ class PostLocationViewController: UIViewController {
                 
                 
                 if let placemark = placemarkes?[0]{
-                    FindLocationViewController.launch(self, placeMark: placemark)
+                    FindLocationViewController.launch(self, placeMark: placemark,mediaUrl: link)
                 }
             }
             

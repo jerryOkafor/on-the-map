@@ -73,11 +73,12 @@ class FindLocationViewController: UIViewController {
          self.addLocationTask?.cancel()
     }
     
-    class func launch(_ caller:UIViewController,placeMark:CLPlacemark){
+    class func launch(_ caller:UIViewController,placeMark:CLPlacemark,mediaUrl:String){
         let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
         
         let vc = storyboard.instantiateViewController(withIdentifier: String(describing: FindLocationViewController.self)) as! FindLocationViewController
         vc.placeMark = placeMark
+        vc.mediaUrl = mediaUrl
         
         vc.hidesBottomBarWhenPushed = true
         caller.navigationController?.pushViewController(vc, animated: true)
