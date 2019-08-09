@@ -8,16 +8,16 @@
 
 import Foundation
 struct Account:Codable {
-    let registered:Bool!
-    let key:String!
+    let registered:Bool
+    let key:String
 }
 
 struct Session:Codable {
-    let id:String!
-    let expiration:String!
+    let id:String
+    let expiration:String
 }
 
 struct CreatSessionResponse : Codable {
-    let account:Account!
-    let session:Session!
+    let account:Account
+    let session:Session
 }

@@ -17,6 +17,7 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var createAccountBtn: UIView!
     
     private var loginTask:URLSessionDataTask? = nil
+    private var getUserTask:URLSessionDataTask? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,20 +41,39 @@ class LoginViewController: UIViewController {
             
             self.toggleNetworkIndicator(true)
             self.loginTask = ApiClient.doRequestWithData(request: ApiRouter.createSession.toUrlRequest(), requestType: CreatSession.self,responseType: CreatSessionResponse.self, body: requestData) { (response, error) in
-                self.toggleNetworkIndicator(false)
+                
+                self.loginTask = nil
                 
                 if let error  = error{
                     self.showError(error.localizedDescription)
                     return
                 }
                 
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
-                    appDelegate.account = response?.account
-                    appDelegate.session = response?.session
+                
+                //get the users detilas
+                self.getUserTask = ApiClient.doRequest(request: ApiRouter.user(userId: (response?.account.key)!).toUrlRequest(), responseType: User.self,secureResponse: true, completion: { (getUserResponse, getUserError) in
+                    self.toggleNetworkIndicator(false)
                     
-                    self.completeLogin()
+                    self.getUserTask  = nil
                     
-                }
+                    if let error  = getUserError{
+                        self.showError("Error while retrieving user details: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+                        appDelegate.account = response?.account
+                        appDelegate.session = response?.session
+                        appDelegate.firstName = getUserResponse?.firstName
+                        appDelegate.lastName = getUserResponse?.lastName
+                        appDelegate.uniqueKey = getUserResponse?.key
+                        
+                        self.completeLogin()
+                        
+                    }
+                    
+                    
+                })
                 
             }
         }catch{
@@ -93,8 +113,11 @@ class LoginViewController: UIViewController {
         super.viewDidDisappear(animated)
         
         self.loginTask?.cancel()
+        
+        self.getUserTask?.cancel()
     }
 }
+
 
 
 

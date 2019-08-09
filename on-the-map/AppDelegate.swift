@@ -14,6 +14,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var account:Account?
     var session:Session?
+    var firstName:String?
+    var lastName:String?
+    var uniqueKey:String?
     var locations  = [Location]()
 
 

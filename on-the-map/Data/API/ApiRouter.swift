@@ -19,6 +19,7 @@ enum ApiRouter{
     
     case createSession
     case deleteSession
+    case user(userId:String)
     case locations
     case createLocation
     
@@ -47,6 +48,7 @@ enum ApiRouter{
         switch self {
         case .createSession: return "session"
         case .deleteSession: return "session"
+        case .user(let userId): return "users/\(userId)"
         case .locations:return "StudentLocation?order=-updatedAt&limit=100"
         case .createLocation:return "StudentLocation"
         }

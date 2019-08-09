@@ -8,17 +8,17 @@
 
 import Foundation
 struct Location : Codable {
-    let firstName:String!
-    let lastName:String!
-    let longitude:Double!
+    let firstName:String
+    let lastName:String
+    let longitude:Double
     let latitude:Double
-    let mapString:String!
-    let mediaURL:String!
-    let uniqueKey:String!
-    let objectId:String!
-    let createdAt:String!
-    let updatedAt:String!
+    let mapString:String
+    let mediaURL:String
+    let uniqueKey:String
+    let objectId:String
+    let createdAt:String
+    let updatedAt:String
 }
 struct LocationResponse : Codable {
-    let results : [Location]!
+    let results : [Location]
 }

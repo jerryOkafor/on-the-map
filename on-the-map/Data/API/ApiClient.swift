@@ -14,8 +14,7 @@ class ApiClient {
     
       
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            print(response)
-           
+
             //check error for early exit, non http error
             guard error  == nil else{
                 DispatchQueue.main.async {
@@ -27,18 +26,59 @@ class ApiClient {
                 return
             }
             
+            
             // Did we get a successful 403 response?
-            guard let status = (response as? HTTPURLResponse)?.statusCode, status != 403 else {
-                print("Wrong response status code (403)")
+            guard let status = (response as? HTTPURLResponse)?.statusCode, status != 400 else {
                 DispatchQueue.main.async {
-                    completion(nil, ApiError.invalidCredential)
+                    completion(nil, ApiError.badRequest)
                 }
                 return
             }
             
+            
+            //check for unathorised
+            guard status != 401 else{
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.unathorized)
+                }
+                return
+            }
+            
+            //check for unathorised
+            guard status != 403 else{
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.unathorized)
+                }
+                return
+            }
+            
+            //check for method change
+            guard status != 405 else {
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.methodNotFound)
+                }
+                return
+            }
+            
+            //Check for URL changed
+            guard status != 405 else {
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.urlChanged)
+                }
+                return
+            }
+            
+            //Chack Server error
+            guard status != 500 else {
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.internalServerError)
+                }
+                return
+            }
+            
+            
             // Did we get a successful 2XX response?
             guard status >= 200 && status <= 299 else {
-                print("Wrong response status code \(status)")
                 DispatchQueue.main.async {
                     completion(nil, ApiError.networkError)
                 }
@@ -87,8 +127,6 @@ class ApiClient {
     
         let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
             
-             print(response)
-            
             //check error for early exit, non http error
             guard error  == nil else{
                 DispatchQueue.main.async {
@@ -102,16 +140,55 @@ class ApiClient {
             
             // Did we get a successful 403 response?
             guard let status = (response as? HTTPURLResponse)?.statusCode, status != 403 else {
-                print("Wrong response status code (403)")
                 DispatchQueue.main.async {
-                    completion(nil, ApiError.invalidCredential)
+                    completion(nil, ApiError.unathorized)
                 }
                 return
             }
             
+            //check for unathorised
+            guard status != 401 else{
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.unathorized)
+                }
+                return
+            }
+            
+            //check for unathorised
+            guard status != 403 else{
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.unathorized)
+                }
+                return
+            }
+            
+            //check for method change
+            guard status != 405 else {
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.methodNotFound)
+                }
+                return
+            }
+            
+            //Check for URL changed
+            guard status != 405 else {
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.urlChanged)
+                }
+                return
+            }
+            
+            //Chack Server error
+            guard status != 500 else {
+                DispatchQueue.main.async {
+                    completion(nil, ApiError.internalServerError)
+                }
+                return
+            }
+            
+            
             // Did we get a successful 2XX response?
             guard status >= 200 && status <= 299 else {
-                print("Wrong response status code \(status)")
                 DispatchQueue.main.async {
                     completion(nil, ApiError.networkError)
                 }
@@ -158,7 +235,11 @@ class ApiClient {
 
 enum ApiError :Int, Error{
     case networkError = 0
-    case invalidCredential = 403
+    case badRequest = 400
+    case unathorized = 401
+    case forbidden = 403
+    case methodNotFound = 405
+    case urlChanged = 410
     case internalServerError = 500
 }
 
@@ -166,8 +247,12 @@ extension ApiError : LocalizedError{
     var localizedDescription: String{
         switch self {
         case .networkError:return "Network error, pleaese try again"
-        case .invalidCredential:return "Invalide Credential, username or password incorrect"
-        default:return "Unknow API error"
+        case .badRequest:return "Invalid paramters sent"
+        case .unathorized:return "Invalide Credential, username or password incorrect"
+        case .forbidden: return "User not authorised"
+        case .methodNotFound:return "Method not found"
+        case .urlChanged:return "Request URL changed"
+        case .internalServerError:return "An error ocurred,please try again later."
         }
     }
 }

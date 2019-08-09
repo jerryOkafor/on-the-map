@@ -9,11 +9,11 @@
 import Foundation
 
 struct CreateLocationRequest : Codable {
-    let firstName:String!
-    let lastName:String!
-    let longitude:Double!
+    let firstName:String
+    let lastName:String
+    let longitude:Double
     let latitude:Double
-    let mapString:String!
-    let mediaURL:String!
-    let uniqueKey:String!
+    let mapString:String
+    let mediaURL:String
+    let uniqueKey:String
 }

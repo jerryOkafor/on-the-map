@@ -103,7 +103,7 @@ extension ListViewController : UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell   = tableView.dequeueReusableCell(withIdentifier: String(describing: MapLink.self), for: indexPath) as! MapLink
         let item = self.locations[indexPath.row]
-        cell.textLabel?.text  = "\(String(describing: item.firstName!)) \(String(describing: item.lastName!))"
+        cell.textLabel?.text  = "\(String(describing: item.firstName)) \(String(describing: item.lastName))"
         cell.detailTextLabel?.text = item.mediaURL
         
         return cell

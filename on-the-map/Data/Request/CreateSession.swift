@@ -8,9 +8,9 @@
 
 import Foundation
 struct Credential:Codable {
-    let userName:String!
-    let password:String!
+    let userName:String
+    let password:String
 }
 struct CreatSession : Codable{
-    let udacity:Credential!
+    let udacity:Credential
 }

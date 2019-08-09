@@ -44,7 +44,13 @@ class FindLocationViewController: UIViewController {
     
 
     @IBAction func onTapFinishBtn(_ sender: Any) {
-        let body  = CreateLocationRequest(firstName: "John", lastName: "Doe", longitude: placeMark.location!.coordinate.longitude, latitude: placeMark.location!.coordinate.latitude, mapString: placeMark.name, mediaURL: mediaUrl, uniqueKey: UUID().uuidString)
+        let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+        let firstName = appDelegate.firstName
+        let lastName = appDelegate.lastName
+        let uniqueKey = appDelegate.uniqueKey
+        
+        
+        let body  = CreateLocationRequest(firstName: firstName!, lastName: lastName!, longitude: placeMark.location!.coordinate.longitude, latitude: placeMark.location!.coordinate.latitude, mapString: placeMark.name!, mediaURL: mediaUrl, uniqueKey: uniqueKey!)
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         self.addLocationTask = ApiClient.doRequestWithData(request: ApiRouter.createLocation.toUrlRequest(), requestType: CreateLocationRequest.self, responseType: CreateLocationResponse.self, body: body,secureResponse: false) { (response, error) in
@@ -55,6 +61,7 @@ class FindLocationViewController: UIViewController {
                 return
             }
             
+        
             if let response = response{
                 let location = Location(firstName: body.firstName, lastName: body.lastName, longitude: body.latitude, latitude: body.longitude, mapString: body.mapString, mediaURL: body.mediaURL, uniqueKey: body.uniqueKey, objectId: response.objectId, createdAt: response.createdAt, updatedAt: response.createdAt)
                 
